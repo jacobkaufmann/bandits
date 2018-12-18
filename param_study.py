@@ -31,9 +31,8 @@ def main():
         print("Param Value: {}".format(v))
         print("Average Rewards:")
         for i in range(len(agents)):
-            print("{} Agent: {}".format(names[i], rewards[i]/steps))
+            print("\t- {} Agent: {:.4f}".format(names[i], rewards[i]/steps))
         print()
-    print(param_vals)
 
 if __name__ == "__main__":
     main()
