@@ -6,6 +6,7 @@ class Agent(object):
     def __init__(self, k, alpha):
         self.Q = np.zeros(k)
         self.N = np.zeros(k)
+        self.k = k
         self.alpha = alpha
 
     def choose_action(self):
