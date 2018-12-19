@@ -33,7 +33,7 @@ def main():
             grad = agent.GradientAgent(k, alpha=v)
             agents = [greedy, e_greedy, ucb, grad]
 
-            for i in range(steps):
+            for _ in range(steps):
                 for j in range(N):
                     action = agents[j].choose_action()
                     reward = bandit.step(action)
