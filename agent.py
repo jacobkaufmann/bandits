@@ -13,9 +13,7 @@ class Agent(object):
         raise NotImplementedError
 
     def update(self, action, reward):
-        old = self.Q[action]
-        self.Q[action] = old+self.alpha*(reward-old)
-        self.N[action] += 1
+        raise NotImplementedError
 
     def reset(self):
         self.Q = np.zeros(self.k)
@@ -29,6 +27,10 @@ class GreedyAgent(Agent):
 
     def choose_action(self):
         return np.argmax(self.Q)
+
+    def update(self, action, reward):
+        self.Q[action] += self.alpha*(reward-self.Q[action])
+        self.N[action] += 1
 
 
 class UcbAgent(Agent):
@@ -46,6 +48,10 @@ class UcbAgent(Agent):
         self.t += 1
         return np.argmax(ucb)
 
+    def update(self, action, reward):
+        self.Q[action] += self.alpha*(reward-self.Q[action])
+        self.N[action] += 1
+
 
 class EpsilonGreedyAgent(Agent):
     def __init__(self, k, alpha, epsilon):
@@ -57,3 +63,33 @@ class EpsilonGreedyAgent(Agent):
             return random.randint(0, len(self.Q)-1)
         else:
             return np.argmax(self.Q)
+    
+    def update(self, action, reward):
+        self.Q[action] += self.alpha*(reward-self.Q[action])
+        self.N[action] += 1
+
+
+class GradientAgent(Agent):
+    def __init__(self, k, alpha):
+        super().__init__(k, alpha)
+        self.H = np.zeros(k)
+        self.P = np.full(k, 1/k)
+        self.baseline = 0
+        self.n = 0
+
+    def choose_action(self):
+        action = np.random.choice(len(self.P), p=self.P)
+        return action
+
+    def update(self, action, reward):
+        self.n += 1
+        self.baseline += (1/self.n)*(reward-self.baseline)
+        a = self.alpha
+        b = self.baseline
+        update = [a*(reward-b)*(1-self.P[i]) if i == action else -a*(reward-b)*(self.P[i]) for i in range(len(self.H))]
+        self.H += update
+        self.update_probabilities()
+    
+    def update_probabilities(self):
+        exp_h = np.exp(self.H-np.max(self.H))
+        self.P = exp_h / np.sum(exp_h, axis=0)

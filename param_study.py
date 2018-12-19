@@ -7,7 +7,7 @@ import agent
 def main():
     k = 10
     alpha = 0.1
-    runs = 100
+    runs = 50
     steps = 1000
 
     mean = 0
@@ -15,7 +15,7 @@ def main():
     nonstationary = False
 
     param_vals = [2**i for i in range(-7, 3)]
-    names = ["Greedy", "Epsilon Greedy", "UCB"]
+    names = ["Greedy", "Epsilon Greedy", "UCB", "Gradient"]
     N = len(names)
     avgs = []
 
@@ -30,7 +30,8 @@ def main():
             greedy = agent.GreedyAgent(k, alpha=alpha, optimism=v)
             e_greedy = agent.EpsilonGreedyAgent(k, alpha=alpha, epsilon=v)
             ucb = agent.UcbAgent(k, alpha=alpha, c=v)
-            agents = [greedy, e_greedy, ucb]
+            grad = agent.GradientAgent(k, alpha=v)
+            agents = [greedy, e_greedy, ucb, grad]
 
             for i in range(steps):
                 for j in range(N):
